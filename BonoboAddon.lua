@@ -292,19 +292,19 @@ f:SetScript("OnEvent", function(self, event, arg1)
         print("|cff00ff00[BonoboAddon]|r Loaded successfully.")
     elseif event == "CHAT_MSG_RAID_WARNING" then
         TriggerBonobo()
---    elseif event == "CHAT_MSG_SAY" and arg1 == "1234678901" then
---        TriggerBonobo()
+    elseif event == "CHAT_MSG_SAY" and arg1 == "1234678901" then
+        TriggerBonobo()
     elseif event == "READY_CHECK" then
         TriggerReadyAlert()
---    elseif event == "CHAT_MSG_SAY" and arg1 == "1234578901" then
---        TriggerReadyAlert()
+    elseif event == "CHAT_MSG_SAY" and arg1 == "1234578901" then
+        TriggerReadyAlert()
     elseif event == "PLAYER_DEAD" then
         TriggerDeathAlert()
---    elseif event == "CHAT_MSG_SAY" and arg1 == "1234568901" then
---        TriggerDeathAlert()
+    elseif event == "CHAT_MSG_SAY" and arg1 == "1234568901" then
+        TriggerDeathAlert()
     elseif event == "CHAT_MSG_SYSTEM" and arg1:find("rolls 100") then
         TriggerGoldenRoll()
---    elseif event == "CHAT_MSG_SAY" and arg1 == "1234568901" then
---        TriggerGoldenRoll()
+    elseif event == "CHAT_MSG_SAY" and arg1 == "1234568901" then
+        TriggerGoldenRoll()
     end
 end)
