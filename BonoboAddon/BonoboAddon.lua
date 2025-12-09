@@ -4,14 +4,32 @@ local f = CreateFrame("Frame")
 
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("CHAT_MSG_RAID_WARNING")
+f:RegisterEvent("CHAT_MSG_RAID")
+f:RegisterEvent("CHAT_MSG_PARTY")
+f:RegisterEvent("CHAT_MSG_GUILD")
 f:RegisterEvent("CHAT_MSG_SAY")
+f:RegisterEvent("CHAT_MSG_YELL")
 f:RegisterEvent("READY_CHECK")
 f:RegisterEvent("PLAYER_DEAD")
 f:RegisterEvent("CHAT_MSG_SYSTEM")
+f:RegisterEvent("UNIT_HEALTH")
+f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 
--- rembember to check your gear and talents
 
-------------------------------------------------------------
+
+
+local chatEvents = {
+    ["CHAT_MSG_RAID"] = true,
+    ["CHAT_MSG_PARTY"] = true,
+    ["CHAT_MSG_GUILD"] = true,
+    ["CHAT_MSG_SAY"] = true
+}
+local lastTriggerTime = 0
+local cooldown = 5
+local RandomSounds = { "rand1.mp3", "rand2.mp3", "rand3.mp3", "rand4.mp3" }
+local wasAbove10 = true
+
+-------------------------------------
 -- 🔹 Ready Check visual alert
 ------------------------------------------------------------
 local readyFrame = CreateFrame("Frame", nil, UIParent)
@@ -34,7 +52,14 @@ readyText:SetJustifyH("CENTER")
 readyText:SetJustifyV("MIDDLE")
 readyText:SetAlpha(0)
 
+
 local function TriggerReadyAlert()
+    local currentTime = GetTime()
+    if currentTime - lastTriggerTime < cooldown then
+        return
+    end
+    lastTriggerTime = currentTime
+
     -- Play sound
     PlaySoundFile("Interface\\AddOns\\BonoboAddon\\rembemb.mp3", "Master")
 
@@ -209,6 +234,12 @@ end)
 -- 🔹 Trigger function
 ------------------------------------------------------------
 local function TriggerBonobo()
+    local currentTime = GetTime()
+    if currentTime - lastTriggerTime < cooldown then
+        return
+    end
+    lastTriggerTime = currentTime
+
     print("|cff00ff00[BonoboAddon]|r Trigger activated!")
     bonoboFrame:Show()
     flash:Play()
@@ -239,6 +270,12 @@ deathText:SetAlpha(0)
 
 -- Trigger function
 local function TriggerDeathAlert()
+    local currentTime = GetTime()
+    if currentTime - lastTriggerTime < cooldown then
+        return
+    end
+    lastTriggerTime = currentTime
+
     -- Play sad sound
     PlaySoundFile("Interface\\AddOns\\BonoboAddon\\sad.mp3", "Master")
 
@@ -275,6 +312,12 @@ goldenTex:SetAllPoints()
 goldenTex:SetTexture("Interface\\AddOns\\BonoboAddon\\golden.png")
 
 local function TriggerGoldenRoll()
+    local currentTime = GetTime()
+    if currentTime - lastTriggerTime < cooldown then
+        return
+    end
+    lastTriggerTime = currentTime
+
     print("|cff00ff00[BonoboAddon]|r Someone rolled a 100! Bonobo is PROUD!")
     goldenFrame:Show()
     UIFrameFadeIn(goldenFrame, 0.5, 0, 1)
@@ -284,6 +327,87 @@ local function TriggerGoldenRoll()
         C_Timer.After(1, function() goldenFrame:Hide() end)
     end)
 end
+
+------------------------------------------------------------
+-- 🔹 So True
+------------------------------------------------------------
+local function SoTrue()
+    local currentTime = GetTime()
+    if currentTime - lastTriggerTime < cooldown then
+        return
+    end
+    lastTriggerTime = currentTime
+
+    print("|cff00ff00[BonoboAddon]|cffe580ff Vesu Mentioned")
+    if IsInInstance() then
+        SendChatMessage("So true", "SAY")
+    end
+end
+
+------------------------------------------------------------
+-- 🔹 Bonobo Mentioned
+------------------------------------------------------------
+
+local function BonoboMentioned()
+    local currentTime = GetTime()
+    if currentTime - lastTriggerTime < cooldown then
+        return
+    end
+    lastTriggerTime = currentTime
+
+    PlaySoundFile("Interface\\AddOns\\BonoboAddon\\" .. RandomSounds[math.random(#RandomSounds)], "Master")
+    do
+        ShowRandomExtras()
+    end
+end
+
+
+------------------------------------------------------------
+-- 🔹 HELPO
+------------------------------------------------------------
+
+local function Helpo()
+    local currentTime = GetTime()
+    if currentTime - lastTriggerTime < cooldown then
+        return
+    end
+    lastTriggerTime = currentTime
+
+    print("|cff00ff00[BonoboAddon]|cFF000000 HEALTH LOW! HELPO!!")
+    if IsInInstance() then
+        SendChatMessage("HELPO", "YELL")
+    end
+end
+
+------------------------------------------------------------
+-- 🔹 BLOODLUST GAMING
+------------------------------------------------------------
+local function Bloodlust()
+    local currentTime = GetTime()
+    if currentTime - lastTriggerTime < cooldown then
+        return
+    end
+    lastTriggerTime = currentTime
+
+    local bloodlustFrame = CreateFrame("Frame", nil, UIParent)
+    bloodlustFrame:SetSize(256, 256)
+    bloodlustFrame:SetPoint("CENTER")
+    bloodlustFrame:Hide()
+
+    local bloodlustTex = bloodlustFrame:CreateTexture(nil, "OVERLAY")
+    bloodlustTex:SetAllPoints()
+    bloodlustTex:SetTexture("Interface\\AddOns\\BonoboAddon\\bl.png")
+
+    print("|cff00ff00[BonoboAddon]|cFF000000 BLOODLUST!? BONOBO ANGRY!!!")
+    bloodlustFrame:Show()
+    UIFrameFadeIn(bloodlustFrame, 0.5, 0, 1)
+    PlaySoundFile("Interface\\AddOns\\BonoboAddon\\bl.mp3", "Master")
+    C_Timer.After(2, function()
+        UIFrameFadeOut(bloodlustFrame, 1, bloodlustFrame:GetAlpha(), 0)
+        C_Timer.After(1, function() bloodlustFrame:Hide() end)
+    end)
+end
+
 ------------------------------------------------------------
 -- 🔹 Event handler
 ------------------------------------------------------------
@@ -292,19 +416,37 @@ f:SetScript("OnEvent", function(self, event, arg1)
         print("|cff00ff00[BonoboAddon]|r Loaded successfully.")
     elseif event == "CHAT_MSG_RAID_WARNING" then
         TriggerBonobo()
---    elseif event == "CHAT_MSG_SAY" and arg1 == "1234678901" then
---        TriggerBonobo()
+        --    elseif event == "CHAT_MSG_SAY" and arg1 == "1234678901" then
+        --        TriggerBonobo()
     elseif event == "READY_CHECK" then
         TriggerReadyAlert()
---    elseif event == "CHAT_MSG_SAY" and arg1 == "1234578901" then
---        TriggerReadyAlert()
+        --    elseif event == "CHAT_MSG_SAY" and arg1 == "1234578901" then
+        --        TriggerReadyAlert()
     elseif event == "PLAYER_DEAD" then
         TriggerDeathAlert()
---    elseif event == "CHAT_MSG_SAY" and arg1 == "1234568901" then
---        TriggerDeathAlert()
+        --    elseif event == "CHAT_MSG_SAY" and arg1 == "1234568901" then
+        --        TriggerDeathAlert()
     elseif event == "CHAT_MSG_SYSTEM" and arg1:find("rolls 100") then
         TriggerGoldenRoll()
---    elseif event == "CHAT_MSG_SAY" and arg1 == "1234568901" then
---        TriggerGoldenRoll()
+        --    elseif event == "CHAT_MSG_SAY" and arg1 == "1234568901" then
+        --        TriggerGoldenRoll()
+    elseif event == "CHAT_MSG_SAY" and (arg1:find("Vesu") or arg1:find("vesu") or arg1:find("VESU")) then
+        SoTrue()
+    elseif chatEvents[event] and (arg1:find("Bonobo") or arg1:find("bonobo") or arg1:find("BONOBO")) then
+        BonoboMentioned()
+    elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        local _, subevent, _, sourceGUID, sourceName, _, _, _, destName, _, _, spellID = CombatLogGetCurrentEventInfo()
+        if subevent == "SPELL_AURA_APPLIED" and (spellID == 57723 or spellID == 57724 or spellID == 390435) and destName == UnitName("player") then
+            Bloodlust()
+        end
+    elseif event == "UNIT_HEALTH" and arg1 == "player" then
+        local healthPercent = UnitHealth("player") / UnitHealthMax("player")
+        if healthPercent <= 0.1 and wasAbove10 then
+            wasAbove10 = false
+            Helpo()
+        elseif healthPercent > 0.1 then
+            wasAbove10 = true
+        end
     end
 end)
+----"CHAT_MSG_SAY" or "CHAT_MSG_PARTY" or "CHAT_MSG_RAID" or
