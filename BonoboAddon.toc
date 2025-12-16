@@ -1,0 +1,6 @@
+## Interface: 11.2.5.63906
+## Title: Bonobo Addon
+## Notes: Don't worry about it
+## Author: Not Freya 
+## Version: 1.0
+BonoboAddon.lua
